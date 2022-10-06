@@ -20,6 +20,7 @@ public class AppConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
+        // TODO : LocalDateTime 관련 오류시, new JavaTimeModule() 추가
         return new ObjectMapper().registerModule(new JavaTimeModule());
     }
 }
