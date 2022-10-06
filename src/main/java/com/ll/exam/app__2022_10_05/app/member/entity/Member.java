@@ -2,6 +2,7 @@ package com.ll.exam.app__2022_10_05.app.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.exam.app__2022_10_05.app.base.entity.BaseEntity;
+import com.ll.exam.app__2022_10_05.util.Util;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -40,5 +42,17 @@ public class Member extends BaseEntity {
         authorities.add(new SimpleGrantedAuthority("MEMBER"));
 
         return authorities;
+    }
+
+    // AccessToken 발급을 위해 회원 정보를 바탕으로 claim map 객체 만들어 반환
+    public Map<String, Object> getAccessTokenClaims() {
+        return Util.mapOf(
+                "id", getId(),
+                "createDate", getCreateDate(),
+                "modifyDate", getModifyDate(),
+                "username", getUsername(),
+                "email", getEmail(),
+                "authorities", getAuthorities()
+        );
     }
 }
