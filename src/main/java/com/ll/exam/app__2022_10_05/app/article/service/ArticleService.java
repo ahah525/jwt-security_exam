@@ -3,8 +3,10 @@ package com.ll.exam.app__2022_10_05.app.article.service;
 import com.ll.exam.app__2022_10_05.app.article.entity.Article;
 import com.ll.exam.app__2022_10_05.app.article.repository.ArticleRepository;
 import com.ll.exam.app__2022_10_05.app.member.entity.Member;
+import com.ll.exam.app__2022_10_05.app.security.entity.MemberContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +34,14 @@ public class ArticleService {
 
     public Optional<Article> findById(Long id) {
         return articleRepository.findById(id);
+    }
+
+    public void delete(Article article) {
+        articleRepository.delete(article);
+    }
+
+    // 게시물 작성자인지 검증
+    public boolean actorCanDelete(MemberContext memberContext, Article article) {
+        return memberContext.getId() == article.getAuthor().getId();
     }
 }
