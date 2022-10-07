@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -39,11 +41,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<RsData> login(@RequestBody LoginDto loginDto) {
-        if(loginDto.isNotValid()) {
-            return Util.spring.responseEntityOf(RsData.of("F-1", "로그인 정보가 올바르지 않습니다."));
-        }
-
+    public ResponseEntity<RsData> login(@Valid @RequestBody LoginDto loginDto) {
         Member member = memberService.findByUsername(loginDto.getUsername()).orElse(null);
         // 1. 존재하지 않는 회원
         if (member == null) {
