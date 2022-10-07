@@ -1,5 +1,6 @@
 package com.ll.exam.app__2022_10_05.app.article.controller;
 
+import com.ll.exam.app__2022_10_05.app.article.dto.ArticleModifyDto;
 import com.ll.exam.app__2022_10_05.app.article.entity.Article;
 import com.ll.exam.app__2022_10_05.app.article.service.ArticleService;
 import com.ll.exam.app__2022_10_05.app.base.dto.RsData;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -62,7 +64,7 @@ public class ArticleController {
         // 삭제 권한 확인
         if(articleService.actorCanDelete(memberContext, article) == false) {
             return Util.spring.responseEntityOf(
-                    RsData.of("F-1", "삭제 권한이 없습니다.")
+                    RsData.of("F-2", "삭제 권한이 없습니다.")
             );
         }
 
@@ -70,6 +72,32 @@ public class ArticleController {
 
         return Util.spring.responseEntityOf(
                 RsData.of("S-1", "해당 게시물이 삭제되었습니다.")
+        );
+    }
+
+    // 게시물 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<RsData> modify(@PathVariable Long id, @AuthenticationPrincipal MemberContext memberContext,
+                                         @Valid @RequestBody ArticleModifyDto articleModifyDto) {
+        Article article = articleService.findById(id).orElse(null);
+
+        if (article == null) {
+            return Util.spring.responseEntityOf(
+                    RsData.of("F-1", "해당 게시물은 존재하지 않습니다.")
+            );
+        }
+
+        // 수정 권한 확인
+        if(articleService.actorCanModify(memberContext, article) == false) {
+            return Util.spring.responseEntityOf(
+                    RsData.of("F-2", "수정 권한이 없습니다.")
+            );
+        }
+
+        articleService.modify(article, articleModifyDto);
+
+        return Util.spring.responseEntityOf(
+                RsData.of("S-1", "해당 게시물이 수정되었습니다.")
         );
     }
 }
