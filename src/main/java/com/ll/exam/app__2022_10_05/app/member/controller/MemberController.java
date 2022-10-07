@@ -1,11 +1,11 @@
 package com.ll.exam.app__2022_10_05.app.member.controller;
 
 import com.ll.exam.app__2022_10_05.app.base.dto.RsData;
+import com.ll.exam.app__2022_10_05.app.member.dto.request.LoginDto;
 import com.ll.exam.app__2022_10_05.app.member.entity.Member;
 import com.ll.exam.app__2022_10_05.app.member.service.MemberService;
 import com.ll.exam.app__2022_10_05.app.security.entity.MemberContext;
 import com.ll.exam.app__2022_10_05.util.Util;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,17 @@ public class MemberController {
     @GetMapping("/test")
     public String test(@AuthenticationPrincipal MemberContext memberContext) {
         return "안녕" + memberContext;
+    }
+
+    // 회원 정보
+    @GetMapping("/me")
+    public ResponseEntity<RsData> me(@AuthenticationPrincipal MemberContext memberContext) {
+        // TODO: 임시코드(추후 스프링 시큐리티로 비로그인 상태에서는 아예 못들어오도록 차단)
+        if(memberContext == null) {
+            return Util.spring.responseEntityOf(RsData.failOf(null));
+        }
+
+        return Util.spring.responseEntityOf(RsData.successOf(memberContext));
     }
 
     @PostMapping("/login")
@@ -56,15 +67,5 @@ public class MemberController {
                 ),
                 Util.spring.httpHeadersOf("Authentication", accessToken)
         );
-    }
-
-    @Data
-    public static class LoginDto {
-        private String username;
-        private String password;
-
-        public boolean isNotValid() {
-            return username == null || password == null || username.trim().length() == 0 || password.trim().length() == 0;
-        }
     }
 }
