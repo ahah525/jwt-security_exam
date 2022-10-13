@@ -4,6 +4,7 @@ import com.ll.exam.app__2022_10_05.app.member.entity.Member;
 import com.ll.exam.app__2022_10_05.app.member.repository.MemberRepository;
 import com.ll.exam.app__2022_10_05.app.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -51,8 +52,12 @@ public class MemberService {
 
     // 해당 토큰이 화이트 리스트에 있는지 검증
     public boolean verifyWithWhiteList(Member member, String token) {
-        System.out.println("token = " + token);
-        System.out.println("token = " + member.getAccessToken());
         return member.getAccessToken().equals(token);
+    }
+
+    // 캐시 사용
+    @Cacheable("member")
+    public Member getByUsername__cached(String username) {
+        return findByUsername(username).orElse(null);
     }
 }
