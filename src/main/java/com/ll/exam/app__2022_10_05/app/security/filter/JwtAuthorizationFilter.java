@@ -31,16 +31,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String barerToken = request.getHeader("Authorization");
         // 토큰 유효성 검증
         if(barerToken != null) {
-            String token = barerToken.substring("Barer ".length());
-            // 토큰이 유효하면 회원 정보 얻어서 강제 로그인 처리
+            String token = barerToken.substring("Bearer ".length());
+            // 1. 1차 체크(정보가 변조되지 않았는지 검증)
             if(jwtProvider.verify(token)) {
                 Map<String, Object> claims = jwtProvider.getClaims(token);
-
                 // TODO : 캐시(레디스) 접근
                 String username = (String) claims.get("username");
                 Member member = memberService.findByUsername(username).orElse(null);
 
-                forceAuthentication(member);
+                // 2. 2차 체크(해당 엑세스 토큰이 화이트 리스트에 포함되는지 검증)
+                if (memberService.verifyWithWhiteList(member, token)) {
+                    // 강제 로그인 처리
+                    forceAuthentication(member);
+                }
             }
         }
         filterChain.doFilter(request, response);
