@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,25 @@ public class Member extends BaseEntity {
 
     public Member(long id) {
         super(id);
+    }
+
+    // claim 정보 -> Member 로 변환
+    public static Member fromJwtClaims(Map<String, Object> jwtClaims) {
+        // Integer -> int -> long
+        long id = (long) (int) jwtClaims.get("id");
+        // ArrayList -> LocalDateTime
+        LocalDateTime createDate = Util.date.bitsToLocalDateTime((List<Integer>)jwtClaims.get("createDate"));
+        LocalDateTime modifyDate = Util.date.bitsToLocalDateTime((List<Integer>)jwtClaims.get("modifyDate"));
+        String username = (String) jwtClaims.get("username");
+        String email = (String) jwtClaims.get("email");
+
+        return Member.builder()
+                .id(id)
+                .createDate(createDate)
+                .modifyDate(modifyDate)
+                .username(username)
+                .email(email)
+                .build();
     }
 
     // TODO: 나중에 씀

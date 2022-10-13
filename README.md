@@ -1,5 +1,9 @@
 # Spring Security + JWT, REST API 예제
 
+### Spring Security + JWT
+- API 요청마다 Authorization header의 JWT AccessToken 검증
+  - 토큰 검증 후, 강제 로그인 처리(DB 접근X 방식)
+
 ### REST API
 >Article
 
