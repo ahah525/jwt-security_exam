@@ -1,6 +1,7 @@
 package com.ll.exam.app__2022_10_05.app.security.filter;
 
 import com.ll.exam.app__2022_10_05.app.member.entity.Member;
+import com.ll.exam.app__2022_10_05.app.member.service.MemberService;
 import com.ll.exam.app__2022_10_05.app.security.entity.MemberContext;
 import com.ll.exam.app__2022_10_05.app.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
+    private final MemberService memberService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,8 +36,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             if(jwtProvider.verify(token)) {
                 Map<String, Object> claims = jwtProvider.getClaims(token);
 
-                // TODO : 회원 인증, 인증정보 로딩할 때 DB 접근하지 않는 방식으로 변경
-                Member member = Member.fromJwtClaims(claims);
+                // TODO : 캐시(레디스) 접근
+                String username = (String) claims.get("username");
+                Member member = memberService.findByUsername(username).orElse(null);
 
                 forceAuthentication(member);
             }
