@@ -23,6 +23,8 @@ public class SecurityConfig {
                 .authorizeRequests(
                         // 로그인, 회원가입 외 모든 요청은 로그인 필수
                         authorizeRequests -> authorizeRequests
+                                // spring doc 허용
+                                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .antMatchers("/member/login", "/member/join")
                                 .permitAll()
                                 .anyRequest()
