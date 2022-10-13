@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CashTestService {
+public class CacheTestService {
     @Cacheable("key1")
     public int getCachedInt() {
         System.out.println("getCachedInt 호출됨");
@@ -21,5 +21,11 @@ public class CashTestService {
     @CachePut("key1")
     public int putCacheKey1() {
         return 10;
+    }
+
+    @Cacheable("plus")
+    public int plus(int a, int b) {
+        System.out.println("== plus 실행 ==");
+        return a + b;
     }
 }

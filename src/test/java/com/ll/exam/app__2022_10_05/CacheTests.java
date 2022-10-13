@@ -1,7 +1,7 @@
 package com.ll.exam.app__2022_10_05;
 
 
-import com.ll.exam.app__2022_10_05.cacheTest.service.CashTestService;
+import com.ll.exam.app__2022_10_05.cacheTest.service.CacheTestService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 class CacheTests {
     @Autowired
-    private CashTestService cashTestService;
+    private CacheTestService cacheTestService;
 
     @Test
     @DisplayName("캐시 사용")
     void t1() throws Exception {
         // OX
-        int rs = cashTestService.getCachedInt();
+        int rs = cacheTestService.getCachedInt();
         System.out.println(rs);
 
-        rs = cashTestService.getCachedInt();
+        rs = cacheTestService.getCachedInt();
         System.out.println(rs);
     }
 
@@ -32,15 +32,15 @@ class CacheTests {
     @DisplayName("캐시 삭제")
     void t2() throws Exception {
         // OXO
-        int rs = cashTestService.getCachedInt();
+        int rs = cacheTestService.getCachedInt();
         System.out.println(rs);
 
-        rs = cashTestService.getCachedInt();
+        rs = cacheTestService.getCachedInt();
         System.out.println(rs);
 
-        cashTestService.deleteCacheKey1();
+        cacheTestService.deleteCacheKey1();
 
-        rs = cashTestService.getCachedInt();
+        rs = cacheTestService.getCachedInt();
         System.out.println(rs);
     }
 
@@ -48,15 +48,30 @@ class CacheTests {
     @DisplayName("캐시 수정")
     void t3() throws Exception {
         // OXX
-        int rs = cashTestService.getCachedInt();
+        int rs = cacheTestService.getCachedInt();
         System.out.println(rs);
 
-        rs = cashTestService.getCachedInt();
+        rs = cacheTestService.getCachedInt();
         System.out.println(rs);
 
-        cashTestService.putCacheKey1();
+        cacheTestService.putCacheKey1();
 
-        rs = cashTestService.getCachedInt();
+        rs = cacheTestService.getCachedInt();
+        System.out.println(rs);
+    }
+
+
+    @Test
+    @DisplayName("더하기 캐시")
+    void t4() throws Exception {
+        // OOX
+        int rs = cacheTestService.plus(10, 20);
+        System.out.println(rs);
+
+        rs = cacheTestService.plus(5, 2);
+        System.out.println(rs);
+
+        rs = cacheTestService.plus(10, 20);
         System.out.println(rs);
     }
 }
