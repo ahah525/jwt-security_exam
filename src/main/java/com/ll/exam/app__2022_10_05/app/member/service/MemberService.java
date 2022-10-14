@@ -1,5 +1,6 @@
 package com.ll.exam.app__2022_10_05.app.member.service;
 
+import com.ll.exam.app__2022_10_05.app.AppConfig;
 import com.ll.exam.app__2022_10_05.app.member.entity.Member;
 import com.ll.exam.app__2022_10_05.app.member.repository.MemberRepository;
 import com.ll.exam.app__2022_10_05.app.security.jwt.JwtProvider;
@@ -61,5 +62,15 @@ public class MemberService {
         Member member = findByUsername(username).orElse(null);
 
         return member.toMap();
+    }
+
+    // TODO : this 를 통한 호출에서, 캐시가 작동하지 않는 문제 해결
+    public Member getByUsername__cached(String username) {
+        // 1. Appconfig 를 통해 memberService 프록시 객체에 접근한다
+        MemberService thisObj = (MemberService) AppConfig.getContext().getBean("memberService");
+        // 2. 프록시 객체의 캐시 메서드를 호출한다
+        Map<String, Object> memberMap = thisObj.getMemberMapByUsername__cached(username);
+
+        return Member.fromMap(memberMap);
     }
 }
