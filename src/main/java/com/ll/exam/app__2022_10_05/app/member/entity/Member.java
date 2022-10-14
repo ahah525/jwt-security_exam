@@ -11,10 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Getter
@@ -39,15 +36,30 @@ public class Member extends BaseEntity {
         super(id);
     }
 
-    // claim 정보 -> Member 로 변환
+    // claim (Map)정보 -> Member 로 변환
     public static Member fromJwtClaims(Map<String, Object> jwtClaims) {
-        // Integer -> int -> long
-        long id = (long) (int) jwtClaims.get("id");
-        // ArrayList -> LocalDateTime
-        LocalDateTime createDate = Util.date.bitsToLocalDateTime((List<Integer>)jwtClaims.get("createDate"));
-        LocalDateTime modifyDate = Util.date.bitsToLocalDateTime((List<Integer>)jwtClaims.get("modifyDate"));
+        long id = 0;
+        if(jwtClaims.get("id") instanceof Long) {
+            // Long -> long
+            id = (long) jwtClaims.get("id");
+        } else if(jwtClaims.get("id") instanceof Integer) {
+            // Integer -> int -> long
+            id = (long) (int) jwtClaims.get("id");
+        }
+
+        LocalDateTime createDate = null;
+        LocalDateTime modifyDate = null;
+        // List -> LocalDateTime
+        if (jwtClaims.get("createDate") instanceof List) {
+            createDate = Util.date.bitsToLocalDateTime((List<Integer>)jwtClaims.get("createDate"));
+        }
+        if(jwtClaims.get("modifyDate") instanceof List) {
+            modifyDate = Util.date.bitsToLocalDateTime((List<Integer>)jwtClaims.get("modifyDate"));
+        }
+
         String username = (String) jwtClaims.get("username");
         String email = (String) jwtClaims.get("email");
+        String accessToken = (String) jwtClaims.get("accessToken");
 
         return Member.builder()
                 .id(id)
@@ -55,7 +67,13 @@ public class Member extends BaseEntity {
                 .modifyDate(modifyDate)
                 .username(username)
                 .email(email)
+                .accessToken(accessToken)
                 .build();
+    }
+
+    // Map -> Member 변환
+    public static Member fromMap(Map<String, Object> map) {
+        return fromJwtClaims(map);
     }
 
     // TODO: 나중에 씀
@@ -75,6 +93,19 @@ public class Member extends BaseEntity {
                 "modifyDate", getModifyDate(),
                 "username", getUsername(),
                 "email", getEmail(),
+                "authorities", getAuthorities()
+        );
+    }
+
+    // Member -> Map 변환
+    public Map<String, Object> toMap() {
+        return Util.mapOf(
+                "id", getId(),
+                "createDate", getCreateDate(),
+                "modifyDate", getModifyDate(),
+                "username", getUsername(),
+                "email", getEmail(),
+                "accessToken", getAccessToken(),
                 "authorities", getAuthorities()
         );
     }
